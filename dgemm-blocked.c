@@ -46,7 +46,7 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
    }
  }
 
- static void do_block_fast(int lda, int M, int N, int K, double* A, double* B, double* C, register unsigned int block_size)
+ static void do_block_fast(int lda, int M, int N, int K, double* A, double* B, double* C)
  {
   
   register unsigned int prod1 = 1;
@@ -54,7 +54,7 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
   register unsigned int res1 = 0;
   register unsigned int res2 = 0;
 
-  double a[block_size * block_size] __attribute__((aligned (32)));
+  double a[BLOCK_SIZE * BLOCK_SIZE] __attribute__((aligned (32)));
   static double temp[4] __attribute__((aligned (32)));
 
   //SIMD variables defined
@@ -75,7 +75,7 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
     prod2 = j * lda;
     for( int i = 0; i < M; i++ )
     {
-      prod1 = i * block_size;
+      prod1 = i * BLOCK_SIZE;
       res1 = prod1 + j;
       res2 = prod2 + i;
       a[res1] = A[res2];
@@ -85,7 +85,7 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
   /* For each row i of A */
     for (int i = 0; i < M; ++i){
       
-      prod1 = i * block_size;
+      prod1 = i * BLOCK_SIZE;
     /* For each column j of B */ 
       for (int j = 0; j < N; ++j) 
       {
@@ -156,7 +156,7 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
 	/* Perform individual block dgemm */
          if((M == BLOCK_SIZE) && (N == BLOCK_SIZE) && (K == BLOCK_SIZE)){
             //do_block_fast(lda, M, N, K, A + i + k*lda, B + k + j*lda, C + i + j*lda);
-          do_block_fast(lda, M, N, K, res_A, res_B, res_C, block_size);
+          do_block_fast(lda, M, N, K, res_A, res_B, res_C);
         }else{
     /* Perform individual block dgemm */
           do_block(lda, M, N, K, res_A, res_B, res_C);
