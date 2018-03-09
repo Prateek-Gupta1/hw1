@@ -32,10 +32,10 @@ clean:
 
 .PHONY : cleanrun
 cleanrun:
-    make clean
-    rm My*
-    make
-    sbatch job-blocked
-    clear
-    ls
+	make clean
+	rm My*
+	make
+	sbatch job-blocked
+	clear
+	ls
 
