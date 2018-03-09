@@ -29,3 +29,12 @@ benchmark-blas : benchmark.o dgemm-blas.o
 .PHONY : clean
 clean:
 	rm -f $(targets) $(objects) *.stdout
+	
+.PHONY : cleanrun
+cleanrun:
+	make clean
+	rm My*
+	make
+	sbatch job-blocked
+	clear
+	ls
