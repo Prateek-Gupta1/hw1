@@ -38,24 +38,19 @@ static void do_block (int lda, int M, int N, int K, double* A, double* B, double
 
  static void do_block_fast(int lda, int M, int N, int K, double* A, double* B, double* C)
  {
-  static double a[BLOCK_SIZE*BLOCK_SIZE] __attribute__ ((aligned (16)));
-      //  make a local aligned copy of A's block
-  for( int j = 0; j < K; j++ ) 
-    for( int i = 0; i < M; i++ )
-      a[i+j*BLOCK_SIZE] = A[i+j*lda];
-
-  /* For each row i of A */
-    for (int i = 0; i < M; ++i)
-    /* For each column j of B */ 
-      for (int j = 0; j < N; ++j) 
-      {
-      /* Compute C(i,j) */
+  for (int i = 0; i < M; ++i)
+  {
+    /* For each column j of B */
+    for (int j = 0; j < N; ++j)
+    {
+        /* Compute C(i,j) */
         double cij = C[i+j*lda];
         for (int k = 0; k < K; ++k)
-          cij += a[i+k*BLOCK_SIZE] * B[k+j*lda];
+            cij += A[i+k*lda] * B[k+j*lda];
         C[i+j*lda] = cij;
-      }
     }
+  }
+}
 
 /* This routine performs a dgemm operation
  *  C := C + A * B
